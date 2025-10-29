@@ -10,6 +10,7 @@ import numpy as np
 from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+
 JWT_SECRET = "MEUSEGREDOAQUI"
 JWT_ALGORITHM = "HS256"
 JWT_EXP_DELTA_SECONDS = 3600
@@ -22,6 +23,7 @@ engine = create_engine(DB_URL, echo=False)
 Base = declarative_base()
 SessionLocal = sessionmaker(bind=engine)
 
+
 class Prediction(Base):
     __tablename__ = "predictions"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -30,9 +32,9 @@ class Prediction(Base):
     petal_length = Column(Float, nullable=False)
     petal_width = Column(Float, nullable=False)
     predicted_class = Column(Integer, nullable=False)
-    creat_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-# Cria as tabelas no banco (em produção utilizar o Alembic)
+# Cria as tabelas no banco (em produção utilizar Alembic)
 Base.metadata.create_all(engine)
 
 model = joblib.load("modelo_iris.pkl")
@@ -41,15 +43,17 @@ logger.info("Modelo carregado com sucesso.")
 app = Flask(__name__)
 predictions_cache = {}
 
+
 TEST_USERNAME = "admin"
 TEST_PASSWORD = "secret"
+
 
 def create_token(username):
     payload = {
         "username": username,
         "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_EXP_DELTA_SECONDS)
     }
-    token = jwt.encode(payload, JWT_SECRET, algorithm= JWT_ALGORITHM)
+    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return token
 
 def token_required(f):
@@ -59,6 +63,7 @@ def token_required(f):
         # decodificar e checar expiração
         return f(*args, **kwargs)
     return decorated
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -70,6 +75,8 @@ def login():
         return jsonify({"token": token})
     else:
         return jsonify({"error": "Credenciais inválidas"}), 401
+
+
 
 @app.route("/predict", methods=["POST"])
 @token_required
@@ -117,7 +124,7 @@ def predict():
         petal_width=petal_width,
         predicted_class=predicted_class
     )
-    db.add(new_pred) 
+    db.add(new_pred)
     db.commit()
     db.close()
 

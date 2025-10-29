@@ -6,4 +6,3 @@
       { "src": "/(.*)", "dest": "api_modelo.py" }
     ]
   }
-  
