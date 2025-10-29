@@ -1,8 +1,15 @@
 {
+    "version":2,
     "builds": [
-      { "src": "api_modelo.py", "use": "@vercel/python" }
+        {
+            "src": "api_modelo.py",
+            "use": "@versel/python"
+        }
     ],
     "routes": [
-      { "src": "/(.*)", "dest": "api_modelo.py" }
+        {
+            "src": "/(.*)",
+            "dest": "api_modelo.py"
+        }
     ]
-  }
+}
